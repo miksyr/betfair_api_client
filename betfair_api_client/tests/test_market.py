@@ -11,13 +11,10 @@ class TestMarket(TestCase):
         super(TestMarket, self).__init__(methodName=methodName)
         self.firstTestRunner = Runner(runnerId=1234, runnerName='firstTestRunner', handicap=1.0)
         self.secondTestRunner = Runner(runnerId=5678, runnerName='secondTestRunner', handicap=-2.0)
-        self.testMarketId = '1.17234'
-        self.testMarketName = 'testMarket'
-        self.testMarketStartTime = datetime(year=1970, month=1, day=1, hour=13, minute=0, second=0)
 
     def setUp(self):
         super().setUp()
-        self.testMarket = Market(marketId=self.testMarketId, marketName=self.testMarketName, marketStartTime=self.testMarketStartTime)
+        self.testMarket = Market(marketId='1.17234', marketName='testMarket', marketStartTime=datetime(year=1970, month=1, day=1))
 
     def test_add_runner(self):
         self.testMarket.add_runner(runner=self.firstTestRunner)
