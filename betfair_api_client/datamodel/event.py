@@ -24,3 +24,6 @@ class Event:
     def add_market(self, market: Market):
         if market.marketId not in self.markets:
             self.markets[market.marketId] = market
+
+    def get_all_markets(self):
+        return self.markets.values()
