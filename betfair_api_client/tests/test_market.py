@@ -5,10 +5,10 @@ from betfair_api_client.betfair_api_client import Market
 from betfair_api_client.betfair_api_client import Runner
 
 
-class TestRunner(TestCase):
+class TestMarket(TestCase):
 
     def __init__(self, methodName='runTest'):
-        super(TestRunner, self).__init__(methodName=methodName)
+        super(TestMarket, self).__init__(methodName=methodName)
         self.firstTestRunner = Runner(runnerId=1234, runnerName='firstTestRunner', handicap=1.0)
         self.secondTestRunner = Runner(runnerId=5678, runnerName='secondTestRunner', handicap=-2.0)
         self.testMarketId = '1.17234'
