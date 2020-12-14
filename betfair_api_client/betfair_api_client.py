@@ -19,10 +19,11 @@ from .datamodel.runner import Runner
 from .datamodel.runner_price import RunnerPrice
 
 
-BETFAIR_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
-
-
 class BetfairApiClient:
+
+    ACCOUNT_ENDPOINT = 'https://api.betfair.com/exchange/account/json-rpc/v1'
+    BETTING_ENDPOINT = 'https://api.betfair.com/exchange/betting/json-rpc/v1'
+    BETFAIR_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
     def __init__(self, username: str, password: str, apiKey: str, clientCertificatePath: str, certificateKeyPath: str):
         """
@@ -42,9 +43,6 @@ class BetfairApiClient:
         self.certificateKeyPath = certificateKeyPath
         self.sessionToken = None
         self.login()
-
-        self.ACCOUNT_ENDPOINT = 'https://api.betfair.com/exchange/account/json-rpc/v1'
-        self.BETTING_ENDPOINT = 'https://api.betfair.com/exchange/betting/json-rpc/v1'
 
     def login(self):
         response = requests.post(
@@ -90,19 +88,20 @@ class BetfairApiClient:
         balanceRequest = {'jsonrpc': '2.0', 'method': 'AccountAPING/v1.0/getAccountFunds'}
         return self._call_api(jsonrpcRequest=balanceRequest, endpointURL=self.ACCOUNT_ENDPOINT)
 
-    def list_competitions(self, countries: List[str], eventTypeIds: List[int]):
+    def list_competitions(self, countryCodes: List[str], sportTypeIds: List[int]):
         competitionsRequest = {
             "params": {
                 "filter": {
-                    "eventTypeIds": eventTypeIds,
-                    'marketCountries': countries,
+                    "eventTypeIds": sportTypeIds,
+                    'marketCountries': countryCodes,
                 }
             },
             "jsonrpc": "2.0",
             "method": "SportsAPING/v1.0/listCompetitions",
             "id": 1
         }
-        return self._call_api(jsonrpcRequest=competitionsRequest, endpointURL=self.BETTING_ENDPOINT)
+        rawCompetitionData = self._call_api(jsonrpcRequest=competitionsRequest, endpointURL=self.BETTING_ENDPOINT)
+        return [Competition(competitionId=int(competition['competition']['id']), competitionName=competition['competition']['name']) for competition in rawCompetitionData]
 
     def get_coming_events(self, sportTypeId: int, marketTypes: List[str], countryCodes: List[str] = None, textQuery: str = None, competitionIds: List[int] = None, daysAhead: int = 7):
         parameterDictionary = {
@@ -135,24 +134,23 @@ class BetfairApiClient:
         processedEvents = self._process_raw_markets_data(rawMarketsData=rawMarketsData)
         return processedEvents
 
-    @staticmethod
-    def _process_raw_markets_data(rawMarketsData: List[dict]):
+    def _process_raw_markets_data(self, rawMarketsData: List[dict]):
         processedEvents = {}
         for rawMarket in rawMarketsData:
             eventId = rawMarket['event']['id']
             if eventId not in processedEvents:
                 competition = Competition(competitionId=int(rawMarket['competition']['id']), competitionName=rawMarket['competition']['name'])
                 processedEvents[eventId] = Event(
-                    eventId=eventId,
+                    eventId=int(eventId),
                     eventName=rawMarket['event']['name'],
-                    eventDate=datetime.strptime(rawMarket['event']['openDate'], BETFAIR_DATETIME_FORMAT),
+                    eventDate=datetime.strptime(rawMarket['event']['openDate'], self.BETFAIR_DATETIME_FORMAT),
                     competition=competition,
                     countryCode=rawMarket['event']['countryCode']
                 )
             market = Market(
                 marketId=rawMarket['marketId'],
                 marketName=rawMarket['marketName'],
-                marketStartTime=datetime.strptime(rawMarket['marketStartTime'], BETFAIR_DATETIME_FORMAT)
+                marketStartTime=datetime.strptime(rawMarket['marketStartTime'], self.BETFAIR_DATETIME_FORMAT)
             )
             for selection in rawMarket['runners']:
                 market.add_runner(

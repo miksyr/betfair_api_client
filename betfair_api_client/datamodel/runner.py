@@ -9,7 +9,7 @@ class Runner:
     def __init__(self, runnerId: int, runnerName: str, handicap: float):
         super().__init__()
         self.runnerId = runnerId
-        self.runnerName = runnerName
+        self.runnerName = runnerName.strip()
         self.handicap = float(handicap)
         self.availableToBack = []
         self.availableToLay = []

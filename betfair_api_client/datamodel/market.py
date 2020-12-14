@@ -22,4 +22,4 @@ class Market:
             self.runners[runner.runnerId] = runner
 
     def get_all_runners(self):
-        return self.runners.values()
+        return list(self.runners.values())

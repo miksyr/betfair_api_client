@@ -26,4 +26,4 @@ class Event:
             self.markets[market.marketId] = market
 
     def get_all_markets(self):
-        return self.markets.values()
+        return list(self.markets.values())
