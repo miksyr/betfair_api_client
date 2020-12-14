@@ -20,3 +20,6 @@ class Market:
     def add_runner(self, runner: Runner):
         if runner.runnerId not in self.runners:
             self.runners[runner.runnerId] = runner
+
+    def get_all_runners(self):
+        return self.runners.values()

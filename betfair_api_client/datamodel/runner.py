@@ -10,7 +10,7 @@ class Runner:
         super().__init__()
         self.runnerId = runnerId
         self.runnerName = runnerName
-        self.handicap = handicap
+        self.handicap = float(handicap)
         self.availableToBack = []
         self.availableToLay = []
 
