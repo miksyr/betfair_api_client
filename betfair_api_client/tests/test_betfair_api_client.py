@@ -38,6 +38,7 @@ class TestBetfairClient(TestCase):
             clientCertificatePath=os.environ['BETFAIR_CLIENT_CERT'],
             certificateKeyPath=os.environ['BETFAIR_CLIENT_CERT_KEY']
         )
+        self.exampleMarketTypes = [MarketTypes.MATCH_ODDS, MarketTypes.HALFTIME_FULLTIME]
         self.rawMatchOddsData = [
             {
                 'marketId': TEST_MARKET.marketId,
@@ -75,6 +76,15 @@ class TestBetfairClient(TestCase):
             TEST_MARKET.add_runner(runner=runner)
         self.exampleProcessedEvent.add_market(market=TEST_MARKET)
 
+    def _get_test_events_from_betfair_api(self, betfairClient):
+        try:
+            return betfairClient.get_coming_events(sportTypeId=1, marketTypes=self.exampleMarketTypes, daysAhead=1)
+        except TooMuchData:
+            results = betfairClient.get_coming_events(sportTypeId=1, marketTypes=self.exampleMarketTypes, competitionIds=[10932509], daysAhead=0)
+            if len(results) == 0:
+                return betfairClient.get_coming_events(sportTypeId=1, countryCodes=['GB'], marketTypes=self.exampleMarketTypes)
+            return results
+
     def test_login(self):
         self.assertIsNotNone(self.betfairClient.sessionToken)
         self.assertNotEqual(self.betfairClient.sessionToken, '')
@@ -92,13 +102,7 @@ class TestBetfairClient(TestCase):
         self.assertTrue(Competition(competitionId=10932509, competitionName='English Premier League') in results)
 
     def test_get_coming_events(self):
-        try:
-            comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=1)
-        except TooMuchData:
-            try:
-                comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, countryCodes=['GB'], marketTypes=[MarketTypes.MATCH_ODDS])
-            except TooMuchData:
-                comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=0)
+        comingEvents = self._get_test_events_from_betfair_api(betfairClient=self.betfairClient)
         self.assertTrue(isinstance(comingEvents, list))
         self.assertTrue(len(comingEvents) > 0)
         self.assertTrue(isinstance(comingEvents[0], Event))
@@ -118,13 +122,7 @@ class TestBetfairClient(TestCase):
         self.assertEqual({r.handicap for r in processedRunners}, {r.handicap for r in ALL_TEST_RUNNERS})
 
     def test_update_prices_for_events(self):
-        try:
-            comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=1)
-        except TooMuchData:
-            try:
-                comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, countryCodes=['GB'], marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=1)
-            except TooMuchData:
-                comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=0)
+        comingEvents = self._get_test_events_from_betfair_api(betfairClient=self.betfairClient)
         updatedEvents = self.betfairClient.update_prices_for_events(events=comingEvents)
         exampleMarket = updatedEvents[0].get_all_markets()[0]
         marketRunners = exampleMarket.get_all_runners()
@@ -138,3 +136,27 @@ class TestBetfairClient(TestCase):
             self.assertTrue(bestLayPrice.price > 0)
             self.assertTrue(bestLayPrice.size > 0)
             self.assertTrue(len(runner.get_all_available_runner_prices()) > 0)
+
+    def test_update_prices_for_markets_with_existing_runners(self):
+        comingEvents = self._get_test_events_from_betfair_api(betfairClient=self.betfairClient)
+        exampleMarkets = comingEvents[0].get_all_markets()
+        updatedMarkets = self.betfairClient.update_prices_for_markets(markets=exampleMarkets)
+        testMarket = updatedMarkets[0]
+        marketRunners = testMarket.get_all_runners()
+        for runner in marketRunners:
+            bestBackPrice = runner.get_best_back_price()
+            self.assertTrue(isinstance(bestBackPrice, RunnerPrice))
+            self.assertTrue(bestBackPrice.price > 0)
+            self.assertTrue(bestBackPrice.size > 0)
+            bestLayPrice = runner.get_best_lay_price()
+            self.assertTrue(isinstance(bestLayPrice, RunnerPrice))
+            self.assertTrue(bestLayPrice.price > 0)
+            self.assertTrue(bestLayPrice.size > 0)
+            self.assertTrue(len(runner.get_all_available_runner_prices()) > 0)
+
+    def test_update_prices_for_markets_with_no_existing_runners(self):
+        comingEvents = self._get_test_events_from_betfair_api(betfairClient=self.betfairClient)
+        exampleMarket = comingEvents[0].get_all_markets()[0]
+        exampleMarket.runners = {}
+        self.assertTrue(len(exampleMarket.runners) == 0)
+        self.assertRaises(Exception, self.betfairClient.update_prices_for_markets, [exampleMarket])

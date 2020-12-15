@@ -172,7 +172,7 @@ class BetfairApiClient:
                 'id': 1
             }
             recentMarketData = self._call_api(jsonrpcRequest=bookRequest, endpointURL=self.BETTING_ENDPOINT)
-            if i == 0 and len(recentMarketData):
+            if i == 0 and len(recentMarketData) > 0:
                 if recentMarketData[0]['isMarketDataDelayed']:
                     warn(message='Market data is delayed.  You may need to upgrade your Betfair Developer account to access live data.')
             for marketData in recentMarketData:
@@ -185,6 +185,35 @@ class BetfairApiClient:
                     event.markets[marketIdUpdate].runners[runnerUpdateId].update_back_odds(availableToBack=backPrices)
                     event.markets[marketIdUpdate].runners[runnerUpdateId].update_lay_odds(availableToLay=layPrices)
             return events
+
+    def update_prices_for_markets(self, markets: List[Market]):
+        for market in markets:
+            if len(market.runners) == 0:
+                raise Exception('Updating markets requires Runners to already be present')
+        marketIdToMarketMap = {market.marketId: market for market in markets}
+        bookRequest = {
+            'jsonrpc': '2.0',
+            'method': 'SportsAPING/v1.0/listMarketBook',
+            'params': {
+                'marketIds': [market.marketId for market in markets],
+                'priceProjection': {'priceData': ['EX_BEST_OFFERS']},
+                'maxResults': '1000'
+            },
+            'id': 1
+        }
+        recentMarketData = self._call_api(jsonrpcRequest=bookRequest, endpointURL=self.BETTING_ENDPOINT)
+        if len(recentMarketData) > 0:
+            if recentMarketData[0]['isMarketDataDelayed']:
+                warn(message='Market data is delayed.  You may need to upgrade your Betfair Developer account to access live data.')
+        for marketData in recentMarketData:
+            marketIdToUpdate = str(marketData['marketId'])
+            for runnerInfo in marketData['runners']:
+                runnerUpdateId = int(runnerInfo['selectionId'])
+                backPrices = [RunnerPrice(betType=BetTypes.BACK, price=p['price'], size=p['size']) for p in runnerInfo['ex'][BetTypes.BACK]]
+                layPrices = [RunnerPrice(betType=BetTypes.LAY, price=p['price'], size=p['size']) for p in runnerInfo['ex'][BetTypes.LAY]]
+                marketIdToMarketMap[marketIdToUpdate].runners[runnerUpdateId].update_back_odds(availableToBack=backPrices)
+                marketIdToMarketMap[marketIdToUpdate].runners[runnerUpdateId].update_lay_odds(availableToLay=layPrices)
+        return list(marketIdToMarketMap.values())
 
     def place_bet(self, market: Market, runner: Runner, oddsToPlace: float, side: str, betSize: float):
         placeOrderRequest = {
