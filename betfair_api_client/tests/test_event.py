@@ -1,9 +1,9 @@
 from datetime import datetime
 from unittest import TestCase
 
-from betfair_api_client.betfair_api_client import Competition
-from betfair_api_client.betfair_api_client import Event
-from betfair_api_client.betfair_api_client import Market
+from betfair_api_client.betfair_api_client.datamodel.competition import Competition
+from betfair_api_client.betfair_api_client.datamodel.event import Event
+from betfair_api_client.betfair_api_client.datamodel.market import Market
 
 
 class TestEvent(TestCase):

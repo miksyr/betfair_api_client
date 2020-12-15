@@ -1,16 +1,15 @@
 import os
-
 from datetime import datetime
 from unittest import TestCase
 
 from betfair_api_client.betfair_api_client import BetfairApiClient
-from betfair_api_client.betfair_api_client import Competition
-from betfair_api_client.betfair_api_client import Event
-from betfair_api_client.betfair_api_client import Market
-from betfair_api_client.betfair_api_client import MarketTypes
-from betfair_api_client.betfair_api_client import Runner
-from betfair_api_client.betfair_api_client import RunnerPrice
-from betfair_api_client.betfair_api_client import TooMuchData
+from betfair_api_client.betfair_api_client.datamodel.competition import Competition
+from betfair_api_client.betfair_api_client.datamodel.event import Event
+from betfair_api_client.betfair_api_client.datamodel.exceptions import TooMuchData
+from betfair_api_client.betfair_api_client.datamodel.market import Market
+from betfair_api_client.betfair_api_client.datamodel.market_types import MarketTypes
+from betfair_api_client.betfair_api_client.datamodel.runner import Runner
+from betfair_api_client.betfair_api_client.datamodel.runner_price import RunnerPrice
 
 
 TEST_COMPETITION = Competition(competitionId=12117172, competitionName='Australian A-League')

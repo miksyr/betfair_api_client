@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from betfair_api_client.betfair_api_client import BetTypes
-from betfair_api_client.betfair_api_client import Runner
-from betfair_api_client.betfair_api_client import RunnerPrice
+from betfair_api_client.betfair_api_client.datamodel.bet_types import BetTypes
+from betfair_api_client.betfair_api_client.datamodel.runner import Runner
+from betfair_api_client.betfair_api_client.datamodel.runner_price import RunnerPrice
 
 
 class TestRunner(TestCase):
