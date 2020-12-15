@@ -10,13 +10,13 @@ from datetime import timedelta
 from typing import List
 from warnings import warn
 
-from .datamodel.bet_types import BetTypes
-from .datamodel.competition import Competition
-from .datamodel.event import Event
-from .datamodel.exceptions import BetfairException
-from .datamodel.market import Market
-from .datamodel.runner import Runner
-from .datamodel.runner_price import RunnerPrice
+from betfair_api_client.datamodel.bet_types import BetTypes
+from betfair_api_client.datamodel.competition import Competition
+from betfair_api_client.datamodel.event import Event
+from betfair_api_client.datamodel.exceptions import BetfairException
+from betfair_api_client.datamodel.market import Market
+from betfair_api_client.datamodel.runner import Runner
+from betfair_api_client.datamodel.runner_price import RunnerPrice
 
 
 class BetfairApiClient:
