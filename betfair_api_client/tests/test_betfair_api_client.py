@@ -97,9 +97,9 @@ class TestBetfairClient(TestCase):
             comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=1)
         except TooMuchData:
             try:
-                comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=0.5)
+                comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, countryCodes=['GB'], marketTypes=[MarketTypes.MATCH_ODDS])
             except TooMuchData:
-                comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=0.2)
+                comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=0)
         self.assertTrue(isinstance(comingEvents, list))
         self.assertTrue(len(comingEvents) > 0)
         self.assertTrue(isinstance(comingEvents[0], Event))
@@ -123,13 +123,19 @@ class TestBetfairClient(TestCase):
             comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=1)
         except TooMuchData:
             try:
-                comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=0.5)
+                comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, countryCodes=['GB'], marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=1)
             except TooMuchData:
-                comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=0.2)
+                comingEvents = self.betfairClient.get_coming_events(sportTypeId=1, marketTypes=[MarketTypes.MATCH_ODDS], daysAhead=0)
         updatedEvents = self.betfairClient.update_prices_for_events(events=comingEvents)
         exampleMarket = updatedEvents[0].get_all_markets()[0]
         marketRunners = exampleMarket.get_all_runners()
         for runner in marketRunners:
-            self.assertTrue(isinstance(runner.get_best_back_price(), RunnerPrice))
-            self.assertTrue(isinstance(runner.get_best_lay_price(), RunnerPrice))
+            bestBackPrice = runner.get_best_back_price()
+            self.assertTrue(isinstance(bestBackPrice, RunnerPrice))
+            self.assertTrue(bestBackPrice.price > 0)
+            self.assertTrue(bestBackPrice.size > 0)
+            bestLayPrice = runner.get_best_lay_price()
+            self.assertTrue(isinstance(bestLayPrice, RunnerPrice))
+            self.assertTrue(bestLayPrice.price > 0)
+            self.assertTrue(bestLayPrice.size > 0)
             self.assertTrue(len(runner.get_all_available_runner_prices()) > 0)
