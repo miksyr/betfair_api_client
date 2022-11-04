@@ -38,7 +38,7 @@ class TestBetfairClient(TestCase):
             clientCertificatePath=os.environ['BETFAIR_CLIENT_CERT'],
             certificateKeyPath=os.environ['BETFAIR_CLIENT_CERT_KEY']
         )
-        self.exampleMarketTypes = [MarketTypes.MATCH_ODDS, MarketTypes.HALFTIME_FULLTIME]
+        self.exampleMarketTypes = [MarketTypes.MATCH_ODDS]
         self.rawMatchOddsData = [
             {
                 'marketId': TEST_MARKET.marketId,
@@ -124,7 +124,7 @@ class TestBetfairClient(TestCase):
     def test_update_prices_for_events(self):
         comingEvents = self._get_test_events_from_betfair_api(betfairClient=self.betfairClient)
         updatedEvents = self.betfairClient.update_prices_for_events(events=comingEvents)
-        exampleMarket = updatedEvents[0].get_all_markets()[0]
+        exampleMarket = updatedEvents[1].get_all_markets()[0]
         marketRunners = exampleMarket.get_all_runners()
         for runner in marketRunners:
             bestBackPrice = runner.get_best_back_price()

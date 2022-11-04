@@ -184,7 +184,7 @@ class BetfairApiClient:
                     # TODO(Mike): this is horrible
                     event.markets[marketIdUpdate].runners[runnerUpdateId].update_back_odds(availableToBack=backPrices)
                     event.markets[marketIdUpdate].runners[runnerUpdateId].update_lay_odds(availableToLay=layPrices)
-            return events
+        return events
 
     def update_prices_for_markets(self, markets: List[Market]):
         for market in markets:
