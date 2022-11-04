@@ -88,18 +88,19 @@ class BetfairApiClient:
         balanceRequest = {'jsonrpc': '2.0', 'method': 'AccountAPING/v1.0/getAccountFunds'}
         return self._call_api(jsonrpcRequest=balanceRequest, endpointURL=self.ACCOUNT_ENDPOINT)
 
-    def list_competitions(self, countryCodes: List[str], sportTypeIds: List[int]):
+    def list_competitions(self, sportTypeIds: List[int], countryCodes: Optional[List[str]] = None):
         competitionsRequest = {
             "params": {
                 "filter": {
                     "eventTypeIds": sportTypeIds,
-                    'marketCountries': countryCodes,
                 }
             },
             "jsonrpc": "2.0",
             "method": "SportsAPING/v1.0/listCompetitions",
             "id": 1
         }
+        if countryCodes:
+            competitionsRequest["params"]["filter"].update({'marketCountries': countryCodes})
         rawCompetitionData = self._call_api(jsonrpcRequest=competitionsRequest, endpointURL=self.BETTING_ENDPOINT)
         return [Competition(competitionId=int(competition['competition']['id']), competitionName=competition['competition']['name']) for competition in rawCompetitionData]
 
