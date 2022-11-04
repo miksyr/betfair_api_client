@@ -5,8 +5,14 @@ from .market import Market
 
 
 class Event:
-
-    def __init__(self, eventId: int, eventName: str, eventDate: datetime, competition: Competition, countryCode: str):
+    def __init__(
+        self,
+        eventId: int,
+        eventName: str,
+        eventDate: datetime,
+        competition: Competition,
+        countryCode: str,
+    ):
         super().__init__()
         self.eventId = eventId
         self.eventName = eventName
@@ -16,7 +22,7 @@ class Event:
         self.markets = {}
 
     def __str__(self):
-        return f'{self.eventName} ({self.eventDate}) - {self.competition.competitionName} ({self.countryCode})'
+        return f"{self.eventName} ({self.eventDate}) - {self.competition.competitionName} ({self.countryCode})"
 
     def __repr__(self):
         return self.__str__()

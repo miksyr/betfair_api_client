@@ -5,7 +5,6 @@ from .runner_price import RunnerPrice
 
 
 class Runner:
-
     def __init__(self, runnerId: int, runnerName: str, handicap: float):
         super().__init__()
         self.runnerId = runnerId
@@ -15,7 +14,7 @@ class Runner:
         self.availableToLay = []
 
     def __str__(self):
-        return f'{self.runnerName} ({self.runnerId})'
+        return f"{self.runnerName} ({self.runnerId})"
 
     def __repr__(self):
         return self.__str__()

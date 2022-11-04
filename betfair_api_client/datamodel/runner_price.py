@@ -1,7 +1,4 @@
-
-
 class RunnerPrice:
-
     def __init__(self, betType, price, size):
         super().__init__()
         self.betType = betType
@@ -9,7 +6,7 @@ class RunnerPrice:
         self.size = size
 
     def __str__(self):
-        return f'betType: {self.betType}, price: {self.price}, size: {self.size}'
+        return f"betType: {self.betType}, price: {self.price}, size: {self.size}"
 
     def __repr__(self):
         return self.__str__()

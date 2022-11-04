@@ -7,20 +7,29 @@ from betfair_api_client.betfair_api_client.datamodel.market import Market
 
 
 class TestEvent(TestCase):
-
-    def __init__(self, methodName='runTest'):
+    def __init__(self, methodName="runTest"):
         super(TestEvent, self).__init__(methodName=methodName)
-        self.firstTestMarket = Market(marketId='1.234567', marketName='firstTestMarket', marketStartTime=datetime(year=1970, month=1, day=1))
-        self.secondTestMarket = Market(marketId='7.654321', marketName='secondTestMarket', marketStartTime=datetime(year=1980, month=12, day=12))
+        self.firstTestMarket = Market(
+            marketId="1.234567",
+            marketName="firstTestMarket",
+            marketStartTime=datetime(year=1970, month=1, day=1),
+        )
+        self.secondTestMarket = Market(
+            marketId="7.654321",
+            marketName="secondTestMarket",
+            marketStartTime=datetime(year=1980, month=12, day=12),
+        )
 
     def setUp(self):
         super().setUp()
         self.testEvent = Event(
             eventId=97531,
-            eventName='testEvent',
+            eventName="testEvent",
             eventDate=datetime(year=1990, month=6, day=6),
-            competition=Competition(competitionName='testCompetition', competitionId=24),
-            countryCode='GB'
+            competition=Competition(
+                competitionName="testCompetition", competitionId=24
+            ),
+            countryCode="GB",
         )
 
     def test_add_market_single(self):
@@ -40,8 +49,13 @@ class TestEvent(TestCase):
         self.testEvent.add_market(market=self.firstTestMarket)
         self.testEvent.add_market(market=self.secondTestMarket)
         self.assertEqual(len(self.testEvent.markets), 2)
-        addedMarketClassIds = {market.marketId for market in self.testEvent.markets.values()}
-        self.assertTrue(addedMarketClassIds == {self.firstTestMarket.marketId, self.secondTestMarket.marketId})
+        addedMarketClassIds = {
+            market.marketId for market in self.testEvent.markets.values()
+        }
+        self.assertTrue(
+            addedMarketClassIds
+            == {self.firstTestMarket.marketId, self.secondTestMarket.marketId}
+        )
 
     def test_get_all_markets(self):
         self.testEvent.add_market(market=self.firstTestMarket)
@@ -49,4 +63,7 @@ class TestEvent(TestCase):
         allMarkets = self.testEvent.get_all_markets()
         self.assertEqual(len(allMarkets), 2)
         addedMarketClassIds = {market.marketId for market in allMarkets}
-        self.assertTrue(addedMarketClassIds == {self.firstTestMarket.marketId, self.secondTestMarket.marketId})
+        self.assertTrue(
+            addedMarketClassIds
+            == {self.firstTestMarket.marketId, self.secondTestMarket.marketId}
+        )

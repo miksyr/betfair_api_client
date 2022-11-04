@@ -4,7 +4,6 @@ from .runner import Runner
 
 
 class Market:
-
     def __init__(self, marketId: str, marketName: str, marketStartTime: datetime):
         self.marketId = marketId
         self.marketName = marketName
