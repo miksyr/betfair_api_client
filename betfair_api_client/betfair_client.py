@@ -7,7 +7,7 @@ import urllib.error
 
 from datetime import datetime
 from datetime import timedelta
-from typing import List
+from typing import List, Optional
 from warnings import warn
 
 from .datamodel.bet_types import BetTypes
