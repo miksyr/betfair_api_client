@@ -3,7 +3,7 @@ import setuptools
 setuptools.setup(
     name='betfair_api_client',
     packages=setuptools.find_packages(),
-    version='0.2',
+    version='0.3',
     description='Client for connecting to the Betfair Odds API and fetch betting market info',
     author='Michael Doran',
     author_email='mikrdoran@gmail.com',
