@@ -206,7 +206,7 @@ class BetfairApiClient:
                         rawMarket["event"]["openDate"], self.BETFAIR_DATETIME_FORMAT
                     ),
                     competition=competition,
-                    countryCode=rawMarket["event"]["countryCode"],
+                    countryCode=rawMarket["event"].get("countryCode", None),
                 )
             market = Market(
                 marketId=rawMarket["marketId"],
