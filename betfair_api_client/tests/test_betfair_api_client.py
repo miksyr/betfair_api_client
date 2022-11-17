@@ -93,14 +93,14 @@ class TestBetfairClient(TestCase):
     def _get_test_events_from_betfair_api(self, betfairClient):
         try:
             return betfairClient.get_coming_events(
-                sportTypeId=1, marketTypes=self.exampleMarketTypes, daysAhead=1
+                sportTypeId=1, countryCodes=["GB"], marketTypes=self.exampleMarketTypes, daysAhead=14
             )
         except TooMuchData:
             results = betfairClient.get_coming_events(
                 sportTypeId=1,
                 marketTypes=self.exampleMarketTypes,
                 competitionIds=[10932509],
-                daysAhead=0,
+                daysAhead=14,
             )
             if len(results) == 0:
                 return betfairClient.get_coming_events(
